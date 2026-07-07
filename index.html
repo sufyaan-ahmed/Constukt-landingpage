@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Construkt — We Build What Matters</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bone-white': '#fffef7',
+            'ink-black': '#000000',
+            'graphite': '#666666',
+            'ash': '#aaaaaa',
+            'charcoal-scale': '#4d4c4a',
+            'magenta-bloom': '#8a0467',
+            'forest-teal': '#03624c',
+            'powder-blue': '#a5c8eb',
+            'candy-pink': '#ffacea',
+            'mint-wash': '#a5ebd6',
+            'navy-ink': '#101731',
+            'signal-yellow': '#ffd001',
+          },
+          fontFamily: {
+            'switzer': ['Switzer', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          fontSize: {
+            'display': ['84px', { lineHeight: '1', letterSpacing: '-0.04em' }],
+            'heading': ['54px', { lineHeight: '1', letterSpacing: '-0.023em' }],
+            'heading-sm': ['34px', { lineHeight: '1.25', letterSpacing: '-0.02em' }],
+            'subheading': ['20px', { lineHeight: '1.4', letterSpacing: '-0.018em' }],
+            'body': ['16px', { lineHeight: '1.4', letterSpacing: '-0.018em' }],
+            'body-sm': ['14px', { lineHeight: '1.43', letterSpacing: '-0.018em' }],
+            'caption': ['12px', { lineHeight: '1.43', letterSpacing: '-0.018em' }],
+          },
+          fontWeight: {
+            'light': '300',
+            'regular': '400',
+          },
+          spacing: {
+            '8': '8px',
+            '16': '16px',
+            '24': '24px',
+            '32': '32px',
+            '48': '48px',
+            '64': '64px',
+            '80': '80px',
+            '112': '112px',
+          },
+          borderRadius: {
+            'full': '1440px',
+            'cards': '0px',
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    body {
+      font-family: 'Inter', 'Switzer', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #fffef7;
+      color: #000000;
+      overflow-x: hidden;
+    }
+
+    /* Hide cursor default */
+    @media (hover: hover) and (pointer: fine) {
+      *, *::before, *::after {
+        cursor: none !important;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 0px; }
+
+    /* ===== CUSTOM CURSOR ===== */
+    .cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #000000;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .cursor-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9998;
+      pointer-events: none;
+    }
+
+    .cursor {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border: 1px solid rgba(0,0,0,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .cursor-paragraph {
+      font-size: 11px;
+      color: #000000;
+      white-space: nowrap;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    body:has([data-cursor]:hover) .cursor {
+      opacity: 1;
+    }
+
+    body:has(a:hover) .cursor-dot,
+    body:has(button:hover) .cursor-dot,
+    body:has([data-cursor-dot]:hover) .cursor-dot {
+      width: 60px;
+      height: 60px;
+      background-color: rgba(0,0,0,0.08);
+      mix-blend-mode: normal;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .cursor-dot, .cursor-wrap { display: none; }
+    }
+
+    /* ===== BUTTON HOVER EFFECT ===== */
+    .btn-rect {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background-color: #000000;
+      transition: height 0.7s cubic-bezier(0.625, 0.05, 0, 1);
+      border-radius: 1440px;
+      z-index: 0;
+    }
+
+    .btn-hover:hover .btn-rect {
+      height: 100%;
+    }
+
+    .btn-hover span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-hover:hover span {
+      color: #fffef7;
+    }
+
+    .btn-hover-outline .btn-rect {
+      background-color: #000000;
+    }
+
+    .btn-hover-outline:hover span {
+      color: #fffef7;
+    }
+
+    /* ===== HAMBURGER MENU ===== */
+    .menu-hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #000000;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .menu-hamburger:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .menu-hamburger {
+        margin-right: 8px;
+      }
+    }
+
+    .hamburger-line {
+      width: 20px;
+      height: 1.5px;
+      background: #fffef7;
+      position: absolute;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-line:nth-child(1) {
+      transform: translateY(-6px);
+    }
+
+    .hamburger-line:nth-child(2) {
+      transform: translateY(0);
+    }
+
+    .hamburger-line:nth-child(3) {
+      transform: translateY(6px);
+    }
+
+    /* Hamburger to X animation */
+    .menu-hamburger.active .hamburger-line:nth-child(1) {
+      transform: translateY(0) rotate(45deg);
+    }
+
+    .menu-hamburger.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    .menu-hamburger.active .hamburger-line:nth-child(3) {
+      transform: translateY(0) rotate(-45deg);
+    }
+
+    /* ===== LINK UNDERLINE ===== */
+    .underline-link {
+      position: relative;
+      display: inline-block;
+    }
+
+    .underline-link::before {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: #666666;
+      transform-origin: right;
+      transform: scaleX(0) rotate(0.001deg);
+      transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+    }
+
+    .underline-link:hover::before {
+      transform-origin: left;
+      transform: scaleX(1) rotate(0.001deg);
+    }
+
+    /* ===== SCROLL REVEAL (initial state set by GSAP, not CSS) ===== */
+
+    /* ===== SECTION EYEBROW ===== */
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: #666666;
+      margin-bottom: 48px;
+    }
+
+    /* ===== DISPLAY HEADLINE ===== */
+    .display-text {
+      font-size: 84px;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: #000000;
+    }
+
+    @media (max-width: 1024px) {
+      .display-text {
+        font-size: 54px;
+        letter-spacing: -0.023em;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .display-text {
+        font-size: 34px;
+        letter-spacing: -0.02em;
+      }
+    }
+
+    /* ===== SECTION HEADLINE ===== */
+    .section-headline {
+      font-size: 54px;
+      font-weight: 300;
+      letter-spacing: -0.023em;
+      line-height: 1;
+      color: #000000;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .section-headline {
+        font-size: 34px;
+        letter-spacing: -0.02em;
+      }
+    }
+
+    /* ===== MENU ===== */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background-color: #fffef7;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 48px;
+    }
+
+    .menu-bg-panel {
+      position: absolute;
+      inset: 0;
+      background-color: #fffef7;
+      transform: translateY(-101%);
+    }
+
+    .menu-link {
+      overflow: hidden;
+    }
+
+    /* ===== HERO IMAGE PARALLAX ===== */
+    .hero-img-wrap {
+      overflow: hidden;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-img-wrap img {
+      width: 100%;
+      height: 120%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* ===== FOOTER NAV LINK HOVER ===== */
+    .footer-nav-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: #000000;
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+    }
+
+    .footer-nav-link:hover .footer-nav-overlay {
+      transform: scaleY(1);
+    }
+
+    .footer-nav-link span,
+    .footer-nav-link svg {
+      position: relative;
+      z-index: 1;
+      transition: color 0.5s ease, transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+    }
+
+    /* ===== FOOTER WORDMARK ===== */
+    .footer-wordmark {
+      font-family: 'Inter', 'Switzer', ui-sans-serif, system-ui, sans-serif;
+      font-size: 14vw;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+      -webkit-text-stroke: 1.5px rgba(0,0,0,0.15);
+      color: transparent;
+      user-select: none;
+      text-align: center;
+    }
+
+    /* ===== FORM ===== */
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #000000;
+    }
+
+    /* Project card hover */
+    .project-image-wrap {
+      aspect-ratio: 4/3;
+    }
+
+    .project-image {
+      transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .project-item:hover .project-image {
+      transform: scale(1.05);
+    }
+
+    .project-title {
+      transition: color 0.4s ease;
+    }
+
+    .project-item:hover .project-title {
+      color: #666666;
+    }
+
+    /* Line reveal animation */
+    .line-reveal {
+      overflow: hidden;
+    }
+
+    .line-reveal .line-inner {
+      display: block;
+      transform: translateY(100%);
+      transition: transform 0.6s cubic-bezier(0.65, 0.01, 0.05, 0.99);
+    }
+
+    .project-item.is-revealed .line-inner {
+      transform: translateY(0);
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .marquee-container::before,
+    .marquee-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 15%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .marquee-container::before {
+      left: 0;
+      background: linear-gradient(to right, #fffef7, transparent);
+    }
+
+    .marquee-container::after {
+      right: 0;
+      background: linear-gradient(to left, #fffef7, transparent);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+    }
+
+    .marquee-track-left {
+      animation: marquee-left 30s linear infinite;
+    }
+
+    .marquee-track-right {
+      animation: marquee-right 30s linear infinite;
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee-left {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @keyframes marquee-right {
+      from { transform: translateX(-50%); }
+      to { transform: translateX(0); }
+    }
+
+    .review-card {
+      flex-shrink: 0;
+      width: 320px;
+      background: #fffef7;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: background-color 0.3s ease;
+    }
+
+    .review-card:hover {
+      background: #f5f5f0;
+    }
+
+    .review-card-accent {
+      background: #e8f5e9;
+      border-color: transparent;
+    }
+
+    .review-card-accent:hover {
+      background: #dcefd9;
+    }
+
+    .review-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 300;
+      color: #666;
+    }
+
+    .review-card-accent .review-avatar {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    /* ===== VERTICAL MARQUEE (MOBILE) ===== */
+    .marquee-vertical-container {
+      position: relative;
+      overflow: hidden;
+      height: 400px;
+    }
+
+    .marquee-vertical-container::before,
+    .marquee-vertical-container::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .marquee-vertical-container::before {
+      top: 0;
+      background: linear-gradient(to bottom, #fffef7, transparent);
+    }
+
+    .marquee-vertical-container::after {
+      bottom: 0;
+      background: linear-gradient(to top, #fffef7, transparent);
+    }
+
+    .marquee-track-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .marquee-track-vertical-up {
+      animation: marquee-up 20s linear infinite;
+    }
+
+    .marquee-track-vertical-down {
+      animation: marquee-down 20s linear infinite;
+    }
+
+    .marquee-track-vertical:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee-up {
+      from { transform: translateY(0); }
+      to { transform: translateY(-50%); }
+    }
+
+    @keyframes marquee-down {
+      from { transform: translateY(-50%); }
+      to { transform: translateY(0); }
+    }
+
+    @media (min-width: 768px) {
+      .marquee-vertical-container {
+        display: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .marquee-container {
+        display: none;
+      }
+
+      .review-card {
+        width: 280px;
+        padding: 24px;
+      }
+
+      .marquee-vertical-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .marquee-track-vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+    }
+
+    /* ===== TERMINAL COMPONENT ===== */
+    .terminal {
+      background: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', monospace;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .terminal-header {
+      background: #2d2d2d;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot-red { background: #ff5f56; }
+    .terminal-dot-yellow { background: #ffbd2e; }
+    .terminal-dot-green { background: #27c93f; }
+
+    .terminal-title {
+      color: #999;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    .terminal-body {
+      padding: 20px;
+      min-height: 200px;
+    }
+
+    .terminal-line {
+      color: #e6e6e6;
+      font-size: 13px;
+      line-height: 1.8;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .terminal-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .terminal-prompt {
+      color: #27c93f;
+      user-select: none;
+    }
+
+    .terminal-command {
+      color: #e6e6e6;
+    }
+
+    .terminal-output {
+      color: #999;
+      padding-left: 16px;
+    }
+
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: #27c93f;
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .terminal-highlight {
+      color: #27c93f;
+    }
+
+    .terminal-info {
+      color: #6bafff;
+    }
+
+    /* ===== HIGHLIGHTER ===== */
+    .highlighter-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .highlighter-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: -4px;
+      right: -4px;
+      height: 35%;
+      background: #87CEFA;
+      opacity: 0.5;
+      border-radius: 4px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+      transition-delay: 0.3s;
+      z-index: 0;
+    }
+
+    .highlighter-wrapper.animate::after {
+      transform: scaleX(1);
+    }
+
+    .highlighter-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== DOT PATTERN ===== */
+    .dot-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+    }
+
+    .footer-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== ANIMATED BEAM ===== */
+    .beam-section {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .beam-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 60px;
+      padding: 40px 0;
+    }
+
+    .beam-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .beam-row {
+      display: flex;
+      justify-content: center;
+      gap: 500px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .beam-row-center {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .beam-node {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px -12px rgba(0, 0, 0, 0.8);
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease;
+    }
+
+    .beam-node:hover {
+      transform: scale(1.1);
+    }
+
+    .beam-node-center {
+      width: 80px;
+      height: 80px;
+    }
+
+    .beam-node svg {
+      width: 28px;
+      height: 28px;
+      color: #333;
+    }
+
+    .beam-node-center svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    @media (max-width: 768px) {
+      .beam-container {
+        gap: 40px;
+      }
+
+      .beam-row {
+        gap: 80px;
+      }
+
+      .beam-node {
+        width: 50px;
+        height: 50px;
+      }
+
+      .beam-node-center {
+        width: 64px;
+        height: 64px;
+      }
+
+      .beam-node svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .beam-node-center svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    /* ===== WORD ROTATE ===== */
+    .word-rotate {
+      display: inline-flex;
+      overflow: hidden;
+      vertical-align: bottom;
+      height: 1.2em;
+    }
+
+    .word-rotate-inner {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .word-rotate-word {
+      display: flex;
+      align-items: center;
+      height: 1.2em;
+      white-space: nowrap;
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      /* Header */
+      .menu-overlay nav {
+        gap: 32px;
+      }
+
+      .menu-overlay .text-heading-sm {
+        font-size: 28px;
+      }
+
+      /* Hero */
+      .display-text {
+        font-size: 36px;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+
+      .hero-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+      }
+
+      .hero-meta .flex.items-center.gap-4 {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      /* Word Rotate */
+      .word-rotate {
+        height: 1.1em;
+      }
+
+      .word-rotate-word {
+        height: 1.1em;
+      }
+
+      /* Sections */
+      .section-headline {
+        margin-bottom: 40px;
+      }
+
+      .eyebrow {
+        margin-bottom: 32px;
+      }
+
+      /* Process Grid */
+      .process-number {
+        font-size: 48px;
+      }
+
+      /* Stats */
+      .stat-number {
+        font-size: 48px;
+      }
+
+      /* Terminal */
+      .terminal {
+        font-size: 11px;
+      }
+
+      .terminal-body {
+        padding: 16px;
+        min-height: 160px;
+      }
+
+      .terminal-line {
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      /* Footer */
+      .footer-wordmark {
+        font-size: 18vw;
+        letter-spacing: -0.03em;
+      }
+
+      .footer-nav-link {
+        padding: 16px 0;
+      }
+
+      .footer-nav-link .text-heading-sm {
+        font-size: 20px;
+      }
+
+      /* Beam Section */
+      .beam-row {
+        gap: 80px;
+      }
+
+      .beam-container {
+        gap: 32px;
+      }
+
+      .beam-node {
+        width: 56px;
+        height: 56px;
+      }
+
+      .beam-node-center {
+        width: 72px;
+        height: 72px;
+      }
+
+      .beam-node svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .beam-node-center svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      /* Cursor */
+      .cursor-dot, .cursor-wrap {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .display-text {
+        font-size: 28px;
+      }
+
+      .section-headline {
+        font-size: 28px;
+      }
+
+      .beam-row {
+        gap: 100px;
+      }
+
+      .beam-node {
+        width: 52px;
+        height: 52px;
+      }
+
+      .beam-node-center {
+        width: 68px;
+        height: 68px;
+      }
+
+      .beam-node svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .beam-node-center svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-bone-white">
+
+  <!-- ===== CUSTOM CURSOR ===== -->
+  <div class="cursor-dot"></div>
+  <div class="cursor-wrap">
+    <div class="cursor">
+      <p class="cursor-paragraph">Learn more</p>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="fixed top-0 left-0 w-full z-50" id="header">
+    <div class="flex items-center justify-between px-8 py-4 lg:px-12">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-ink-black flex items-center justify-center" data-cursor-dot>
+          <span class="text-bone-white text-sm font-light">C</span>
+        </div>
+        <span class="text-caption font-regular tracking-wide uppercase">Construkt</span>
+      </div>
+
+      <!-- Menu Button -->
+      <button id="menuBtn" data-menu-toggle class="menu-hamburger" data-cursor="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MENU OVERLAY ===== -->
+  <div class="menu-overlay" id="menuOverlay" data-nav="closed">
+    <div class="menu-bg-panel"></div>
+    <div class="menu-bg-panel"></div>
+    <!-- Close Button -->
+    <button id="menuCloseBtn" class="absolute top-6 right-6 z-10 w-12 h-12 rounded-full border border-ash flex items-center justify-center hover:border-ink-black transition-colors" data-cursor="Close">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <nav class="flex flex-col items-center gap-6" style="z-index:1;">
+      <div class="menu-link">
+        <a href="#about" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">About</a>
+      </div>
+      <div class="menu-link">
+        <a href="#services" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">Services</a>
+      </div>
+      <div class="menu-link">
+        <a href="#projects" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">Projects</a>
+      </div>
+      <div class="menu-link">
+        <a href="#process" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">Process</a>
+      </div>
+      <div class="menu-link">
+        <a href="#testimonials" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">Testimonials</a>
+      </div>
+      <div class="menu-link">
+        <a href="#contact" class="text-heading-sm font-light text-ink-black hover:text-graphite transition-colors menu-nav-link">Contact</a>
+      </div>
+    </nav>
+    <div class="absolute bottom-8 left-8 right-8 flex justify-between items-center" style="z-index:1;">
+      <div class="flex gap-4">
+        <a href="#" class="underline-link text-body-sm font-regular text-graphite">123 Builder's Lane, New York</a>
+        <a href="#" class="underline-link text-body-sm font-regular text-graphite">hello@construkt.com</a>
+      </div>
+      <span class="text-caption font-regular text-graphite">&copy; 2026 Construkt</span>
+    </div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" class="relative min-h-screen flex flex-col justify-end pb-16 px-8 lg:px-12 pt-32">
+    <!-- Background Image with Parallax -->
+    <div class="hero-img-wrap">
+      <img
+        src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80"
+        alt="Construction site"
+        id="heroImg"
+      >
+      <div class="absolute inset-0 bg-gradient-to-t from-bone-white via-bone-white/30 to-transparent"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10">
+      <div class="overflow-hidden">
+        <h1 class="display-text max-w-5xl hero-title">WE BUILD WHAT<br>MATTERS</h1>
+      </div>
+    </div>
+
+    <!-- Meta overlay -->
+    <div class="relative z-10 mt-8 flex items-end justify-between hero-meta">
+      <div>
+        <p class="text-caption font-regular uppercase text-graphite mb-2">Construkt Construction</p>
+        <p class="text-heading-sm font-light text-ink-black max-w-md">
+          <span class="word-rotate" id="heroWordRotate" data-words='["spaces","legacies","futures"]'>
+            <span class="word-rotate-inner">
+              <span class="word-rotate-word">spaces</span>
+              <span class="word-rotate-word">legacies</span>
+              <span class="word-rotate-word">futures</span>
+            </span>
+          </span>
+          that stand the test of time
+        </p>
+      </div>
+      <div class="hidden lg:block">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center animate-bounce" style="animation-duration: 2s;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="px-8 lg:px-12 py-24 lg:py-32">
+    <div data-fade>
+      <p class="eyebrow">Who We Are</p>
+      <h2 class="section-headline max-w-3xl">Building with <span class="highlighter-wrapper" data-highlighter><span class="highlighter-text">purpose</span></span><br>since 2003</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+      <!-- Left: Story -->
+      <div data-fade>
+        <p class="text-body font-regular text-graphite leading-relaxed mb-6">
+          Construkt was founded with a simple vision: to create spaces that inspire and endure. For over two decades, we've been transforming empty lots into landmarks, outdated buildings into modern masterpieces, and dreams into tangible realities.
+        </p>
+        <p class="text-body font-regular text-graphite leading-relaxed mb-6">
+          Our team of architects, engineers, and craftsmen share a commitment to precision and quality. Every project we undertake reflects our belief that great construction is both an art and a science — where structural integrity meets aesthetic excellence.
+        </p>
+        <p class="text-body font-regular text-graphite leading-relaxed">
+          From residential homes to commercial complexes, we bring the same level of dedication and expertise to every build. We don't just construct buildings — we build relationships, communities, and futures.
+        </p>
+      </div>
+
+      <!-- Right: Accent Card -->
+      <div class="bg-mint-wash p-8 lg:p-12 flex flex-col justify-center" data-fade>
+        <span class="text-display font-light text-ink-black mb-4">20+</span>
+        <span class="text-subheading font-light text-charcoal-scale">Years of Excellence</span>
+        <p class="text-body-sm font-regular text-graphite mt-4">
+          Two decades of delivering exceptional construction projects across residential, commercial, and infrastructure sectors.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section id="services" class="px-8 lg:px-12 py-24 lg:py-32">
+    <div data-fade>
+      <p class="eyebrow">What We Do</p>
+      <h2 class="section-headline">Our Expertise</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-ash/20">
+      <!-- Service 1 -->
+      <div class="bg-bone-white p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Residential Construction</h3>
+        <p class="text-body-sm font-regular text-graphite">Custom homes, apartments, and residential communities built with attention to every detail that makes a house a home.</p>
+      </div>
+
+      <!-- Service 2 -->
+      <div class="bg-bone-white p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Commercial Construction</h3>
+        <p class="text-body-sm font-regular text-graphite">Offices, retail spaces, and mixed-use developments designed for functionality, sustainability, and visual impact.</p>
+      </div>
+
+      <!-- Service 3 (Accent) -->
+      <div class="bg-candy-pink p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ink-black/20 flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Renovation & Remodeling</h3>
+        <p class="text-body-sm font-regular text-charcoal-scale">Breathing new life into existing structures with thoughtful renovations that preserve character while adding modern amenities.</p>
+      </div>
+
+      <!-- Service 4 -->
+      <div class="bg-bone-white p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Interior Design</h3>
+        <p class="text-body-sm font-regular text-graphite">Complete interior solutions from concept to completion — curated spaces that reflect your style and enhance daily living.</p>
+      </div>
+
+      <!-- Service 5 -->
+      <div class="bg-bone-white p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Project Management</h3>
+        <p class="text-body-sm font-regular text-graphite">End-to-end project oversight ensuring timelines are met, budgets are respected, and quality standards are exceeded.</p>
+      </div>
+
+      <!-- Service 6 -->
+      <div class="bg-bone-white p-8 lg:p-10" data-fade data-cursor="View service">
+        <div class="w-12 h-12 rounded-full border border-ash flex items-center justify-center mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+          </svg>
+        </div>
+        <h3 class="text-subheading font-light mb-4">Infrastructure & Civil Works</h3>
+        <p class="text-body-sm font-regular text-graphite">Roads, bridges, and public infrastructure built to last — engineering solutions that serve communities for generations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section id="projects" class="px-8 lg:px-12 py-24 lg:py-32">
+    <div class="flex items-end justify-between mb-16" data-fade>
+      <div>
+        <p class="eyebrow mb-0">Our Work</p>
+        <h2 class="section-headline mb-0">Featured Projects</h2>
+      </div>
+      <button class="w-10 h-10 rounded-full border border-ash flex items-center justify-center hover:border-ink-black transition-colors" data-cursor="View all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+      <!-- Project 1 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80" alt="Skyline Tower" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-forest-teal"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">01</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Skyline Tower</h3>
+      </a>
+
+      <!-- Project 2 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80" alt="The Meridian" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-magenta-bloom"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">02</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">The Meridian</h3>
+      </a>
+
+      <!-- Project 3 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80" alt="Vertex Office Park" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-forest-teal"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">03</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Vertex Office Park</h3>
+      </a>
+
+      <!-- Project 4 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80" alt="Coastal Residence" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-magenta-bloom"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">04</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Coastal Residence</h3>
+      </a>
+
+      <!-- Project 5 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=1200&q=80" alt="Metro Hospital Wing" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-forest-teal"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">05</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Metro Hospital Wing</h3>
+      </a>
+
+      <!-- Project 6 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80" alt="Riverside Bridge" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-magenta-bloom"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">06</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Riverside Bridge</h3>
+      </a>
+
+      <!-- Project 7 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80" alt="Summit Villa" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-forest-teal"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">07</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Summit Villa</h3>
+      </a>
+
+      <!-- Project 8 -->
+      <a href="#" class="project-item group block" data-fade data-cursor="View project">
+        <div class="project-image-wrap overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80" alt="Central Market Plaza" class="project-image w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="flex items-center gap-2 mt-4 mb-2">
+          <span class="w-2 h-2 rounded-full bg-magenta-bloom"></span>
+          <span class="text-caption font-regular text-graphite">Project <span class="project-number">08</span></span>
+        </div>
+        <h3 class="text-heading-sm font-light project-title line-reveal">Central Market Plaza</h3>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== PROCESS ===== -->
+  <section id="process" class="px-8 lg:px-12 py-24 lg:py-32">
+    <div data-fade>
+      <p class="eyebrow">How We Work</p>
+      <h2 class="section-headline">Our Process</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <!-- Step 1 -->
+      <div data-fade>
+        <span class="text-display font-light text-ash block mb-6">01</span>
+        <h3 class="text-subheading font-light mb-4">Consultation</h3>
+        <p class="text-body-sm font-regular text-graphite">We listen to your vision, understand your needs, and assess the project scope before breaking ground.</p>
+      </div>
+
+      <!-- Step 2 -->
+      <div data-fade>
+        <span class="text-display font-light text-ash block mb-6">02</span>
+        <h3 class="text-subheading font-light mb-4">Design</h3>
+        <p class="text-body-sm font-regular text-graphite">Our architects and designers create detailed plans that balance aesthetics, functionality, and budget.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div data-fade>
+        <span class="text-display font-light text-ash block mb-6">03</span>
+        <h3 class="text-subheading font-light mb-4">Build</h3>
+        <p class="text-body-sm font-regular text-graphite">Skilled craftsmen bring the plans to life with precision, quality materials, and rigorous quality control.</p>
+      </div>
+
+      <!-- Step 4 -->
+      <div data-fade>
+        <span class="text-display font-light text-ash block mb-6">04</span>
+        <h3 class="text-subheading font-light mb-4">Handover</h3>
+        <p class="text-body-sm font-regular text-graphite">Final walkthrough, documentation, and ongoing support ensure your complete satisfaction.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS ===== -->
+  <section id="stats" class="bg-navy-ink px-8 lg:px-12 py-24 lg:py-32">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 text-center lg:text-left">
+      <div data-fade>
+        <span class="text-display font-light text-bone-white block mb-2 stat-number" data-target="20">0</span>
+        <span class="text-caption font-regular uppercase text-ash">Years of Experience</span>
+      </div>
+      <div data-fade>
+        <span class="text-display font-light text-bone-white block mb-2 stat-number" data-target="150">0</span>
+        <span class="text-caption font-regular uppercase text-ash">Projects Completed</span>
+      </div>
+      <div data-fade>
+        <span class="text-display font-light text-bone-white block mb-2 stat-number" data-target="80">0</span>
+        <span class="text-caption font-regular uppercase text-ash">Happy Clients</span>
+      </div>
+      <div data-fade>
+        <span class="text-display font-light text-bone-white block mb-2 stat-number" data-target="35">0</span>
+        <span class="text-caption font-regular uppercase text-ash">Team Members</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials" class="py-24 lg:py-32">
+    <div class="px-8 lg:px-12" data-fade>
+      <p class="eyebrow">What They Say</p>
+      <h2 class="section-headline">Client Voices</h2>
+    </div>
+
+    <!-- Desktop: Horizontal Marquee -->
+    <div class="marquee-container">
+      <!-- Row 1: Left -->
+      <div class="marquee-track marquee-track-left mb-4">
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">SM</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail and commitment to quality exceeded our expectations."</p>
+          <div>
+            <p class="text-subheading font-light">Sarah Mitchell</p>
+            <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">JC</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt on our office renovation was seamless. They understood our brand identity perfectly."</p>
+          <div>
+            <p class="text-subheading font-light">James Cooper</p>
+            <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">MT</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"From initial consultation to final handover, Construkt demonstrated exceptional craftsmanship. True professionals."</p>
+          <div>
+            <p class="text-subheading font-light">Michael Torres</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">ER</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"The team delivered our commercial build three weeks ahead of schedule. Incredible project management and communication throughout."</p>
+          <div>
+            <p class="text-subheading font-light">Emily Rodriguez</p>
+            <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">DK</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Construkt's design-build approach saved us time and money. The final result was beyond what we imagined."</p>
+          <div>
+            <p class="text-subheading font-light">David Kim</p>
+            <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">LW</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Professional, creative, and detail-oriented. Construkt turned our dream home into a reality we never thought possible."</p>
+          <div>
+            <p class="text-subheading font-light">Laura Washington</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <!-- Duplicate for infinite scroll -->
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">SM</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail and commitment to quality exceeded our expectations."</p>
+          <div>
+            <p class="text-subheading font-light">Sarah Mitchell</p>
+            <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">JC</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt on our office renovation was seamless. They understood our brand identity perfectly."</p>
+          <div>
+            <p class="text-subheading font-light">James Cooper</p>
+            <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">MT</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"From initial consultation to final handover, Construkt demonstrated exceptional craftsmanship. True professionals."</p>
+          <div>
+            <p class="text-subheading font-light">Michael Torres</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">ER</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"The team delivered our commercial build three weeks ahead of schedule. Incredible project management and communication throughout."</p>
+          <div>
+            <p class="text-subheading font-light">Emily Rodriguez</p>
+            <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">DK</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Construkt's design-build approach saved us time and money. The final result was beyond what we imagined."</p>
+          <div>
+            <p class="text-subheading font-light">David Kim</p>
+            <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">LW</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Professional, creative, and detail-oriented. Construkt turned our dream home into a reality we never thought possible."</p>
+          <div>
+            <p class="text-subheading font-light">Laura Washington</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Right -->
+      <div class="marquee-track marquee-track-right">
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">ER</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"The team delivered our commercial build three weeks ahead of schedule. Incredible project management."</p>
+          <div>
+            <p class="text-subheading font-light">Emily Rodriguez</p>
+            <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">DK</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Construkt's design-build approach saved us time and money. The final result was beyond what we imagined."</p>
+          <div>
+            <p class="text-subheading font-light">David Kim</p>
+            <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">LW</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Professional, creative, and detail-oriented. Construkt turned our dream home into a reality we never thought possible."</p>
+          <div>
+            <p class="text-subheading font-light">Laura Washington</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">SM</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail exceeded our expectations."</p>
+          <div>
+            <p class="text-subheading font-light">Sarah Mitchell</p>
+            <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">JC</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt on our office renovation was seamless. They understood our brand identity perfectly."</p>
+          <div>
+            <p class="text-subheading font-light">James Cooper</p>
+            <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">MT</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"From initial consultation to final handover, Construkt demonstrated exceptional craftsmanship."</p>
+          <div>
+            <p class="text-subheading font-light">Michael Torres</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <!-- Duplicate for infinite scroll -->
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">ER</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"The team delivered our commercial build three weeks ahead of schedule. Incredible project management."</p>
+          <div>
+            <p class="text-subheading font-light">Emily Rodriguez</p>
+            <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">DK</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Construkt's design-build approach saved us time and money. The final result was beyond what we imagined."</p>
+          <div>
+            <p class="text-subheading font-light">David Kim</p>
+            <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">LW</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Professional, creative, and detail-oriented. Construkt turned our dream home into a reality we never thought possible."</p>
+          <div>
+            <p class="text-subheading font-light">Laura Washington</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">SM</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail exceeded our expectations."</p>
+          <div>
+            <p class="text-subheading font-light">Sarah Mitchell</p>
+            <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+          </div>
+        </div>
+        <div class="review-card review-card-accent" data-cursor="Read review">
+          <div class="review-avatar">JC</div>
+          <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt on our office renovation was seamless. They understood our brand identity perfectly."</p>
+          <div>
+            <p class="text-subheading font-light">James Cooper</p>
+            <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+          </div>
+        </div>
+        <div class="review-card" data-cursor="Read review">
+          <div class="review-avatar">MT</div>
+          <p class="text-body font-regular text-graphite leading-relaxed">"From initial consultation to final handover, Construkt demonstrated exceptional craftsmanship."</p>
+          <div>
+            <p class="text-subheading font-light">Michael Torres</p>
+            <p class="text-caption font-regular text-graphite">Homeowner</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile: Vertical Marquee -->
+    <div class="px-8 md:hidden">
+      <div class="marquee-vertical-container">
+        <div class="marquee-track-vertical marquee-track-vertical-up">
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">SM</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail exceeded our expectations."</p>
+            <div>
+              <p class="text-subheading font-light">Sarah Mitchell</p>
+              <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+            </div>
+          </div>
+          <div class="review-card review-card-accent" data-cursor="Read review">
+            <div class="review-avatar">JC</div>
+            <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt was seamless. They understood our brand identity perfectly."</p>
+            <div>
+              <p class="text-subheading font-light">James Cooper</p>
+              <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+            </div>
+          </div>
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">MT</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Exceptional craftsmanship from start to finish. True professionals."</p>
+            <div>
+              <p class="text-subheading font-light">Michael Torres</p>
+              <p class="text-caption font-regular text-graphite">Homeowner</p>
+            </div>
+          </div>
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">ER</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Delivered our commercial build three weeks ahead of schedule."</p>
+            <div>
+              <p class="text-subheading font-light">Emily Rodriguez</p>
+              <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+            </div>
+          </div>
+          <div class="review-card review-card-accent" data-cursor="Read review">
+            <div class="review-avatar">DK</div>
+            <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Design-build approach saved us time and money."</p>
+            <div>
+              <p class="text-subheading font-light">David Kim</p>
+              <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+            </div>
+          </div>
+          <!-- Duplicate -->
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">SM</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Construkt transformed our vision into reality. Their attention to detail exceeded our expectations."</p>
+            <div>
+              <p class="text-subheading font-light">Sarah Mitchell</p>
+              <p class="text-caption font-regular text-graphite">CEO, Mitchell Enterprises</p>
+            </div>
+          </div>
+          <div class="review-card review-card-accent" data-cursor="Read review">
+            <div class="review-avatar">JC</div>
+            <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Working with Construkt was seamless. They understood our brand identity perfectly."</p>
+            <div>
+              <p class="text-subheading font-light">James Cooper</p>
+              <p class="text-caption font-regular text-charcoal-scale">Director, Cooper & Partners</p>
+            </div>
+          </div>
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">MT</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Exceptional craftsmanship from start to finish. True professionals."</p>
+            <div>
+              <p class="text-subheading font-light">Michael Torres</p>
+              <p class="text-caption font-regular text-graphite">Homeowner</p>
+            </div>
+          </div>
+          <div class="review-card" data-cursor="Read review">
+            <div class="review-avatar">ER</div>
+            <p class="text-body font-regular text-graphite leading-relaxed">"Delivered our commercial build three weeks ahead of schedule."</p>
+            <div>
+              <p class="text-subheading font-light">Emily Rodriguez</p>
+              <p class="text-caption font-regular text-graphite">COO, TechBuild Inc</p>
+            </div>
+          </div>
+          <div class="review-card review-card-accent" data-cursor="Read review">
+            <div class="review-avatar">DK</div>
+            <p class="text-body font-regular text-charcoal-scale leading-relaxed">"Design-build approach saved us time and money."</p>
+            <div>
+              <p class="text-subheading font-light">David Kim</p>
+              <p class="text-caption font-regular text-charcoal-scale">Partner, Kim & Associates</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="px-8 lg:px-12 py-24 lg:py-32">
+    <div data-fade>
+      <p class="eyebrow">Get In Touch</p>
+      <h2 class="section-headline">Let's Build Together</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+      <!-- Form -->
+      <form class="space-y-6" onsubmit="event.preventDefault();" data-fade>
+        <div>
+          <label class="text-caption font-regular uppercase text-graphite block mb-2">Name</label>
+          <input type="text" placeholder="Your name" class="w-full border border-ash bg-transparent px-4 py-3 text-body font-regular rounded-full focus:border-ink-black transition-colors" data-cursor="Type">
+        </div>
+        <div>
+          <label class="text-caption font-regular uppercase text-graphite block mb-2">Email</label>
+          <input type="email" placeholder="your@email.com" class="w-full border border-ash bg-transparent px-4 py-3 text-body font-regular rounded-full focus:border-ink-black transition-colors" data-cursor="Type">
+        </div>
+        <div>
+          <label class="text-caption font-regular uppercase text-graphite block mb-2">Message</label>
+          <textarea rows="5" placeholder="Tell us about your project..." class="w-full border border-ash bg-transparent px-4 py-3 text-body font-regular rounded-2xl focus:border-ink-black transition-colors resize-none" data-cursor="Type"></textarea>
+        </div>
+        <button type="submit" class="relative overflow-hidden bg-ink-black text-bone-white px-8 py-4 rounded-full text-body font-regular btn-hover" data-cursor="Send">
+          <span>Send</span>
+        </button>
+      </form>
+
+      <!-- Contact Info - Terminal -->
+      <div data-fade>
+        <div class="terminal" id="contactTerminal">
+          <div class="terminal-header">
+            <div class="terminal-dot terminal-dot-red"></div>
+            <div class="terminal-dot terminal-dot-yellow"></div>
+            <div class="terminal-dot terminal-dot-green"></div>
+            <span class="terminal-title">construkt — contact</span>
+          </div>
+          <div class="terminal-body">
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">cat address.txt</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-output">123 Builder's Lane</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-output">Construction District</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-output">New York, NY 10001</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">cat phone.txt</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-highlight">+1 (555) 123-4567</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">cat email.txt</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-highlight">hello@construkt.com</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">cat hours.txt</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-info">Mon-Fri: 8:00 AM — 6:00 PM</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-info">Sat: 9:00 AM — 2:00 PM</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-info">Sun: Closed</span>
+            </div>
+            <div class="terminal-line" data-terminal-line>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-cursor"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WORKFLOW (ANIMATED BEAM) ===== -->
+  <section id="workflow" class="px-8 lg:px-12 py-24 lg:py-32 border-t border-ash">
+    <div data-fade>
+      <p class="eyebrow">How We Work</p>
+      <h2 class="section-headline">Seamless From Start to Finish</h2>
+    </div>
+
+    <div class="beam-container" id="beamContainer" data-fade>
+      <!-- SVG for beams -->
+      <svg class="beam-svg" id="beamSvg"></svg>
+
+      <!-- Row 1: Architecture & Engineering -->
+      <div class="beam-row">
+        <div class="beam-node" id="node-arch" data-cursor="Phase 1">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18"/>
+          </svg>
+        </div>
+        <div class="beam-node" id="node-eng" data-cursor="Phase 2">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.1-5.1m0 0L11.42 4.97m-5.1 5.1H21"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Row 2: Project Management (Center) -->
+      <div class="beam-row-center">
+        <div class="beam-node beam-node-center" id="node-pm" data-cursor="Phase 3">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Row 3: Construction & Delivery -->
+      <div class="beam-row">
+        <div class="beam-node" id="node-const" data-cursor="Phase 4">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21"/>
+          </svg>
+        </div>
+        <div class="beam-node" id="node-del" data-cursor="Phase 5">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-body font-regular text-graphite max-w-2xl mx-auto mt-16 leading-relaxed" data-fade>
+      Every project flows through our proven process — from initial concept to final handover. Our integrated approach ensures seamless coordination at every phase.
+    </p>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="relative px-8 lg:px-12 pt-16 pb-8 border-t border-ash overflow-hidden" id="footer">
+    <!-- Dot Pattern Background -->
+    <div class="dot-pattern"></div>
+
+    <div class="footer-content">
+    <!-- Top Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 mb-16" data-fade>
+      <!-- Left: Brand + Contact -->
+      <div class="flex flex-col justify-between">
+        <div>
+          <!-- Logo -->
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-ink-black flex items-center justify-center">
+              <span class="text-bone-white text-sm font-light">C</span>
+            </div>
+            <span class="text-caption font-regular tracking-wide uppercase">Construkt</span>
+          </div>
+          <p class="text-body-sm font-regular text-graphite mb-8 max-w-sm">unique public interventions // immersive activations</p>
+          <p class="text-body-sm font-regular text-graphite mb-8 max-w-md leading-relaxed">
+            Founded with a vision to transform the built environment, we bring together decades of combined expertise as visionary creatives and practical masterminds, redefining possibilities in construction.
+          </p>
+        </div>
+        <!-- Contact Links -->
+        <div class="space-y-3">
+          <a href="#" class="underline-link text-body font-regular text-ink-black block" data-cursor="Visit">123 Builder's Lane, New York, NY 10001</a>
+          <a href="mailto:hello@construkt.com" class="underline-link text-body font-regular text-ink-black block" data-cursor="Email">hello@construkt.com</a>
+        </div>
+        <!-- Social Icons -->
+        <div class="flex items-center gap-4 mt-8">
+          <a href="#" class="w-10 h-10 rounded-full border border-ash flex items-center justify-center hover:border-ink-black transition-colors" data-cursor="Follow">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full border border-ash flex items-center justify-center hover:border-ink-black transition-colors" data-cursor="Follow">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full border border-ash flex items-center justify-center hover:border-ink-black transition-colors" data-cursor="Follow">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Navigation Links -->
+      <div class="flex flex-col gap-4">
+        <a href="#about" class="footer-nav-link group relative overflow-hidden py-4 border-b border-ash" data-cursor="Visit">
+          <div class="footer-nav-overlay"></div>
+          <div class="relative flex items-center justify-between pl-4">
+            <span class="text-heading-sm font-light text-ink-black group-hover:text-bone-white transition-colors duration-500">About</span>
+            <svg class="w-5 h-5 text-ink-black group-hover:text-bone-white transition-colors duration-500 transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10"/>
+            </svg>
+          </div>
+        </a>
+        <a href="#services" class="footer-nav-link group relative overflow-hidden py-4 border-b border-ash" data-cursor="Visit">
+          <div class="footer-nav-overlay"></div>
+          <div class="relative flex items-center justify-between pl-4">
+            <span class="text-heading-sm font-light text-ink-black group-hover:text-bone-white transition-colors duration-500">Services</span>
+            <svg class="w-5 h-5 text-ink-black group-hover:text-bone-white transition-colors duration-500 transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10"/>
+            </svg>
+          </div>
+        </a>
+        <a href="#projects" class="footer-nav-link group relative overflow-hidden py-4 border-b border-ash" data-cursor="Visit">
+          <div class="footer-nav-overlay"></div>
+          <div class="relative flex items-center justify-between pl-4">
+            <span class="text-heading-sm font-light text-ink-black group-hover:text-bone-white transition-colors duration-500">Projects</span>
+            <svg class="w-5 h-5 text-ink-black group-hover:text-bone-white transition-colors duration-500 transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10"/>
+            </svg>
+          </div>
+        </a>
+        <a href="#process" class="footer-nav-link group relative overflow-hidden py-4 border-b border-ash" data-cursor="Visit">
+          <div class="footer-nav-overlay"></div>
+          <div class="relative flex items-center justify-between pl-4">
+            <span class="text-heading-sm font-light text-ink-black group-hover:text-bone-white transition-colors duration-500">Process</span>
+            <svg class="w-5 h-5 text-ink-black group-hover:text-bone-white transition-colors duration-500 transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10"/>
+            </svg>
+          </div>
+        </a>
+        <a href="#contact" class="footer-nav-link group relative overflow-hidden py-4 border-b border-ash" data-cursor="Visit">
+          <div class="footer-nav-overlay"></div>
+          <div class="relative flex items-center justify-between pl-4">
+            <span class="text-heading-sm font-light text-ink-black group-hover:text-bone-white transition-colors duration-500">Get in Touch</span>
+            <svg class="w-5 h-5 text-ink-black group-hover:text-bone-white transition-colors duration-500 transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10"/>
+            </svg>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Gradient Divider -->
+    <div class="h-px bg-gradient-to-r from-transparent via-ash to-transparent mb-12" data-fade></div>
+
+    <!-- CTA Section -->
+    <div class="mb-16" data-fade>
+      <h3 class="text-heading-sm font-light mb-4 max-w-md">Ready to start your project?</h3>
+      <p class="text-body font-regular text-graphite max-w-md">Share your ideas with us, and we'll begin turning your vision into reality today.</p>
+    </div>
+
+    <!-- Legal Row -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between pt-8 border-t border-ash mb-12" data-fade>
+      <div class="flex items-center gap-6 mb-4 md:mb-0">
+        <span class="text-caption font-regular text-graphite uppercase">CONSTRUKT 2026</span>
+        <a href="#" class="underline-link text-caption font-regular text-graphite">Privacy Policy</a>
+        <a href="#" class="underline-link text-caption font-regular text-graphite">Cookies</a>
+      </div>
+      <span class="text-caption font-regular text-graphite">Made by <a href="#" class="underline-link">Sufyan Ahmed</a></span>
+    </div>
+
+    <!-- Decorative Wordmark -->
+    <div class="overflow-hidden flex justify-center py-16 lg:py-24" data-fade>
+      <div class="footer-wordmark">
+        CONSTRUKT
+      </div>
+    </div>
+    </div> <!-- close footer-content -->
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // ===== LENIS SMOOTH SCROLL =====
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+
+    // ===== REGISTER GSAP PLUGINS =====
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ===== HERO ANIMATIONS =====
+    const heroTl = gsap.timeline({ delay: 0.3 });
+
+    // Hero headline reveal
+    heroTl.from('.hero-title', {
+      yPercent: 100,
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power4.out',
+    });
+
+    // Hero meta fade in
+    heroTl.from('.hero-meta', {
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+    }, '-=0.5');
+
+    // Hero image parallax on scroll
+    gsap.to('#heroImg', {
+      y: '20%',
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1,
+      },
+    });
+
+    // ===== SCROLL REVEAL ANIMATIONS =====
+    const fadeElements = document.querySelectorAll('[data-fade]');
+    const gridSelectors = ['#services .grid', '#projects .grid', '#process .grid'];
+
+    // Set initial hidden state for all fade elements
+    gsap.set(fadeElements, { opacity: 0, y: 60 });
+
+    fadeElements.forEach((el) => {
+      // Skip elements inside grids (handled by stagger)
+      if (gridSelectors.some(sel => el.closest(sel))) return;
+
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none none',
+          once: true,
+        },
+      });
+    });
+
+    // ===== STAGGER CHILDREN IN GRIDS =====
+    const grids = [
+      { parent: '#services .grid', children: '[data-fade]' },
+      { parent: '#projects .grid', children: '[data-fade]' },
+      { parent: '#process .grid', children: '[data-fade]' },
+    ];
+
+    grids.forEach(({ parent, children }) => {
+      const grid = document.querySelector(parent);
+      if (!grid) return;
+      const items = grid.querySelectorAll(children);
+      if (items.length === 0) return;
+
+      // Set initial hidden state for grid items
+      gsap.set(items, { opacity: 0, y: 60 });
+
+      ScrollTrigger.create({
+        trigger: grid,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          gsap.to(items, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            stagger: 0.1,
+            onComplete: function() {
+              // Add revealed class for line animation
+              items.forEach(item => item.classList.add('is-revealed'));
+            }
+          });
+        },
+      });
+    });
+
+    // ===== PROJECT LINE REVEAL =====
+    const projectTitles = document.querySelectorAll('.line-reveal');
+    projectTitles.forEach(title => {
+      // Wrap text content in span for animation
+      const text = title.textContent;
+      title.innerHTML = `<span class="line-inner">${text}</span>`;
+    });
+
+    grids.forEach(({ parent, children }) => {
+      const grid = document.querySelector(parent);
+      if (!grid) return;
+      const items = grid.querySelectorAll(children);
+      if (items.length === 0) return;
+
+      // Set initial hidden state for grid items
+      gsap.set(items, { opacity: 0, y: 60 });
+
+      ScrollTrigger.create({
+        trigger: grid,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          gsap.to(items, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            stagger: 0.1,
+          });
+        },
+      });
+    });
+
+    // ===== STAT COUNTER ANIMATION =====
+    const statNumbers = document.querySelectorAll('.stat-number');
+
+    statNumbers.forEach((el) => {
+      const target = parseInt(el.getAttribute('data-target'));
+      const suffix = target >= 10 ? '+' : '';
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          gsap.to(el, {
+            innerText: target,
+            duration: 2,
+            ease: 'power2.out',
+            snap: { innerText: 1 },
+            onUpdate: function() {
+              el.textContent = Math.round(parseFloat(el.textContent)) + suffix;
+            },
+          });
+        },
+      });
+    });
+
+    // ===== MENU ANIMATION =====
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuNavLinks = document.querySelectorAll('.menu-nav-link');
+    const menuBgPanels = document.querySelectorAll('.menu-bg-panel');
+    const menuFooterElements = menuOverlay.querySelectorAll('.absolute');
+    let menuOpen = false;
+
+    // Initial state
+    gsap.set(menuOverlay, { display: 'none', opacity: 0 });
+    gsap.set(menuBgPanels, { yPercent: -101 });
+    gsap.set(menuNavLinks, { yPercent: 140 });
+    gsap.set(menuFooterElements, { autoAlpha: 0, y: 20 });
+
+    function openMenu() {
+      menuOpen = true;
+      lenis.stop();
+
+      const tl = gsap.timeline();
+
+      tl.set(menuOverlay, { display: 'flex' })
+        .to(menuOverlay, { opacity: 1, duration: 0.3 })
+        .to(menuBgPanels, { yPercent: 0, stagger: 0.12, duration: 0.6, ease: 'power3.inOut' }, '<')
+        .to(menuNavLinks, { yPercent: 0, stagger: 0.06, duration: 0.6, ease: 'power3.out' }, '-=0.2')
+        .to(menuFooterElements, { autoAlpha: 1, y: 0, stagger: 0.1, duration: 0.5 }, '-=0.3');
+
+      menuBtn.classList.add('active');
+    }
+
+    function closeMenu() {
+      menuOpen = false;
+      lenis.start();
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set(menuOverlay, { display: 'none', opacity: 0 });
+          gsap.set(menuBgPanels, { yPercent: -101 });
+          gsap.set(menuNavLinks, { yPercent: 140 });
+          gsap.set(menuFooterElements, { autoAlpha: 0, y: 20 });
+        }
+      });
+
+      tl.to(menuFooterElements, { autoAlpha: 0, y: 20, stagger: 0.05, duration: 0.3 })
+        .to(menuNavLinks, { yPercent: 140, stagger: 0.05, duration: 0.4, ease: 'power3.in' }, '<')
+        .to(menuBgPanels, { yPercent: -101, stagger: 0.08, duration: 0.5, ease: 'power3.inOut' }, '-=0.2')
+        .to(menuOverlay, { opacity: 0, duration: 0.3 }, '-=0.3');
+
+      menuBtn.classList.remove('active');
+    }
+
+    menuBtn.addEventListener('click', () => {
+      menuOpen ? closeMenu() : openMenu();
+    });
+
+    // Close button in menu
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    if (menuCloseBtn) {
+      menuCloseBtn.addEventListener('click', () => {
+        if (menuOpen) closeMenu();
+      });
+    }
+
+    // Close on nav link click
+    menuNavLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        closeMenu();
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuOpen) closeMenu();
+    });
+
+    // ===== CUSTOM CURSOR =====
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorWrap = document.querySelector('.cursor-wrap');
+    const cursor = document.querySelector('.cursor');
+    const cursorParagraph = cursor.querySelector('p');
+    const cursorTargets = document.querySelectorAll('[data-cursor]');
+    let lastText = '';
+
+    const xTo = gsap.quickTo(cursorDot, 'x', { duration: 0.01, ease: 'power3' });
+    const yTo = gsap.quickTo(cursorDot, 'y', { duration: 0.01, ease: 'power3' });
+
+    // Track cursor position
+    let mouseX = 0, mouseY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      xTo(e.clientX);
+      yTo(e.clientY);
+
+      gsap.to(cursorWrap, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.9,
+        ease: 'power3',
+      });
+    });
+
+    // Cursor text on hover
+    cursorTargets.forEach(target => {
+      target.addEventListener('mouseenter', () => {
+        const newText = target.getAttribute('data-cursor');
+        if (newText !== lastText) {
+          cursorParagraph.textContent = newText;
+          lastText = newText;
+        }
+        gsap.to(cursor, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
+      });
+
+      target.addEventListener('mouseleave', () => {
+        gsap.to(cursor, { scale: 0.8, opacity: 0, duration: 0.3, ease: 'power2.out' });
+      });
+    });
+
+    // Hide on mobile
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      cursorDot.style.display = 'none';
+      cursorWrap.style.display = 'none';
+    }
+
+    // ===== WORD ROTATE =====
+    const wordRotateEl = document.getElementById('heroWordRotate');
+    if (wordRotateEl) {
+      const inner = wordRotateEl.querySelector('.word-rotate-inner');
+      const words = wordRotateEl.querySelectorAll('.word-rotate-word');
+      let currentIndex = 0;
+      const duration = 2500;
+
+      function rotateWords() {
+        currentIndex = (currentIndex + 1) % words.length;
+        const translateY = -(currentIndex * 100);
+        inner.style.transform = `translateY(${translateY}%)`;
+      }
+
+      setInterval(rotateWords, duration);
+    }
+
+    // ===== HIGHLIGHTER ANIMATION =====
+    const highlighters = document.querySelectorAll('[data-highlighter]');
+    highlighters.forEach(el => {
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          el.classList.add('animate');
+        },
+      });
+    });
+
+    // ===== ANIMATED BEAM =====
+    const beamContainer = document.getElementById('beamContainer');
+    if (beamContainer) {
+      const beamSvg = document.getElementById('beamSvg');
+      const nodes = {
+        arch: document.getElementById('node-arch'),
+        eng: document.getElementById('node-eng'),
+        pm: document.getElementById('node-pm'),
+        const: document.getElementById('node-const'),
+        del: document.getElementById('node-del'),
+      };
+
+      let animated = false;
+
+      function getNodeCenter(el) {
+        const rect = el.getBoundingClientRect();
+        const containerRect = beamContainer.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2 - containerRect.left,
+          y: rect.top + rect.height / 2 - containerRect.top,
+        };
+      }
+
+      function createBeamPath(from, to, curvature = 0) {
+        const midX = (from.x + to.x) / 2;
+        const controlY = from.y - curvature;
+        return `M ${from.x},${from.y} Q ${midX},${controlY} ${to.x},${to.y}`;
+      }
+
+      function drawBeams() {
+        if (animated) return;
+        animated = true;
+
+        beamSvg.innerHTML = '';
+        const width = beamContainer.offsetWidth;
+        const height = beamContainer.offsetHeight;
+        beamSvg.setAttribute('width', width);
+        beamSvg.setAttribute('height', height);
+        beamSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+        // Create defs for gradient
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+        const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+        gradient.setAttribute('id', 'beam-gradient');
+        gradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+        gradient.setAttribute('x1', '0%');
+        gradient.setAttribute('y1', '0%');
+        gradient.setAttribute('x2', '100%');
+        gradient.setAttribute('y2', '0%');
+
+        const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stop1.setAttribute('offset', '0%');
+        stop1.setAttribute('stop-color', '#ffaa40');
+        stop1.setAttribute('stop-opacity', '0');
+
+        const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stop2.setAttribute('offset', '20%');
+        stop2.setAttribute('stop-color', '#ffaa40');
+
+        const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stop3.setAttribute('offset', '80%');
+        stop3.setAttribute('stop-color', '#9c40ff');
+
+        const stop4 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stop4.setAttribute('offset', '100%');
+        stop4.setAttribute('stop-color', '#9c40ff');
+        stop4.setAttribute('stop-opacity', '0');
+
+        gradient.appendChild(stop1);
+        gradient.appendChild(stop2);
+        gradient.appendChild(stop3);
+        gradient.appendChild(stop4);
+        defs.appendChild(gradient);
+        beamSvg.appendChild(defs);
+
+        const arch = getNodeCenter(nodes.arch);
+        const eng = getNodeCenter(nodes.eng);
+        const pm = getNodeCenter(nodes.pm);
+        const const_ = getNodeCenter(nodes.const);
+        const del = getNodeCenter(nodes.del);
+
+        const connections = [
+          { from: arch, to: pm, curvature: 40 },
+          { from: eng, to: pm, curvature: 40 },
+          { from: pm, to: const_, curvature: 40 },
+          { from: pm, to: del, curvature: 40 },
+        ];
+
+        connections.forEach((conn, i) => {
+          const pathD = createBeamPath(conn.from, conn.to, conn.curvature);
+
+          // Background path (gray)
+          const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          bgPath.setAttribute('d', pathD);
+          bgPath.setAttribute('stroke', 'gray');
+          bgPath.setAttribute('stroke-width', '2');
+          bgPath.setAttribute('stroke-opacity', '0.2');
+          bgPath.setAttribute('fill', 'none');
+          bgPath.setAttribute('stroke-linecap', 'round');
+          beamSvg.appendChild(bgPath);
+
+          // Animated gradient path
+          const animPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          animPath.setAttribute('d', pathD);
+          animPath.setAttribute('stroke', 'url(#beam-gradient)');
+          animPath.setAttribute('stroke-width', '2');
+          animPath.setAttribute('fill', 'none');
+          animPath.setAttribute('stroke-linecap', 'round');
+
+          // Calculate path length for animation
+          const pathLength = animPath.getTotalLength ? 1000 : 1000;
+          animPath.setAttribute('stroke-dasharray', `${pathLength}`);
+          animPath.setAttribute('stroke-dashoffset', `${pathLength}`);
+
+          beamSvg.appendChild(animPath);
+
+          // Animate the gradient position
+          const duration = 2000;
+          const delay = i * 400;
+
+          setTimeout(() => {
+            // Animate gradient
+            let start = null;
+            const animateGradient = (timestamp) => {
+              if (!start) start = timestamp;
+              const progress = (timestamp - start) / duration;
+
+              if (progress < 1) {
+                const x1 = -10 + (progress * 120);
+                const x2 = 0 + (progress * 120);
+                gradient.setAttribute('x1', `${x1}%`);
+                gradient.setAttribute('x2', `${x2}%`);
+                requestAnimationFrame(animateGradient);
+              } else {
+                // Reset and repeat
+                start = null;
+                gradient.setAttribute('x1', '-10%');
+                gradient.setAttribute('x2', '0%');
+                requestAnimationFrame(animateGradient);
+              }
+            };
+            requestAnimationFrame(animateGradient);
+
+            // Animate path drawing
+            let pathStart = null;
+            const animatePath = (timestamp) => {
+              if (!pathStart) pathStart = timestamp;
+              const progress = (timestamp - pathStart) / duration;
+
+              if (progress < 1) {
+                const offset = pathLength * (1 - progress);
+                animPath.setAttribute('stroke-dashoffset', `${offset}`);
+                requestAnimationFrame(animatePath);
+              }
+            };
+            requestAnimationFrame(animatePath);
+          }, delay);
+        });
+      }
+
+      ScrollTrigger.create({
+        trigger: beamContainer,
+        start: 'top 80%',
+        once: true,
+        onEnter: drawBeams,
+      });
+
+      // Redraw on resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          animated = false;
+          drawBeams();
+        }, 250);
+      });
+    }
+
+    // ===== HEADER SCROLL EFFECT =====
+    const header = document.getElementById('header');
+
+    ScrollTrigger.create({
+      start: 'top -80',
+      onUpdate: (self) => {
+        if (self.progress > 0) {
+          header.classList.add('shadow-sm');
+        } else {
+          header.classList.remove('shadow-sm');
+        }
+      },
+    });
+
+    // ===== TERMINAL ANIMATION =====
+    const terminal = document.getElementById('contactTerminal');
+    if (terminal) {
+      const terminalLines = terminal.querySelectorAll('[data-terminal-line]');
+      let terminalAnimated = false;
+
+      function animateTerminal() {
+        if (terminalAnimated) return;
+        terminalAnimated = true;
+
+        terminalLines.forEach((line, index) => {
+          setTimeout(() => {
+            line.classList.add('visible');
+          }, index * 150);
+        });
+      }
+
+      ScrollTrigger.create({
+        trigger: terminal,
+        start: 'top 80%',
+        once: true,
+        onEnter: animateTerminal,
+      });
+    }
+  </script>
+
+</body>
+</html>
